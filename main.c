@@ -22,7 +22,7 @@ volatile int posicaoFlecha = 69;
 volatile int posicaoArvore = 63;
 volatile int contDuck = 2;
 volatile int contJump = 2;
-volatile int flechaNaTela = 1;
+volatile int flechaNaTela = 0;
 volatile int arvoreNaTela = 0;
 
 uint8_t dinoUp[] =
@@ -84,7 +84,7 @@ int print_dino(void)
 int print_jumping_dino(void)
 {
     nokia_lcd_custom(1, dinoUp);
-    nokia_lcd_set_cursor(1, 24);
+    nokia_lcd_set_cursor(1, 18);
     nokia_lcd_write_string("\001", 2, 0);
 }
 
@@ -113,7 +113,7 @@ int print_tree(int x)
 {
     if (x == 0)
     {
-        posicaoArvore = 63;
+        posicaoArvore = 69;
         arvoreNaTela = !arvoreNaTela;
     }
 
@@ -134,9 +134,37 @@ int print_arrow(int x)
     nokia_lcd_set_cursor(x, 32);
     nokia_lcd_write_string("\001", 1, 1);
 }
+int end_screen(){
+    nokia_lcd_clear();
+    nokia_lcd_set_cursor(3, 0);
+    nokia_lcd_write_string("Voce Perdeu!", 1, 0);
+    nokia_lcd_set_cursor(5, 12);
+    nokia_lcd_write_string("Restart", 1, 0);
+    print_dino();
+    print_floor();
+    nokia_lcd_render();
+    _delay_ms(4000);
+    nokia_lcd_power(0);
+
+}
+
+int detect_coll(){
+    if(posicaoArvore == 10){
+        if(dinoJump == 0){
+            end_screen();
+        }
+    }
+    
+    if(posicaoFlecha == 10){
+        if(dinoDuck == 0){
+            end_screen();
+        }
+    }
+}
 
 int comeca_jogo(void)
 {
+    srand(time(NULL));
     nokia_lcd_clear();
     sei();
     while (colisao == 0)
@@ -167,12 +195,23 @@ int comeca_jogo(void)
             posicaoFlecha--;
         }
         if (arvoreNaTela)
-        {
+        {   
             print_tree(posicaoArvore); // posicao inicial da arvore
             posicaoArvore--;
         }
         print_floor();
         nokia_lcd_render();
+        detect_coll();
+        
+        
+
+        if(tempoAtual%4==0){
+           flechaNaTela = 1;
+        }
+        if(tempoAtual%9==0){
+            arvoreNaTela = 1;
+        }
+    
     }
     cli();
     contagem = 10;
@@ -191,7 +230,7 @@ ISR(TIMER1_COMPA_vect)
     if (dinoJump == 1)
     {
         contJump--;
-    }
+    }   
 
     if (contDuck <= 0)
     {
