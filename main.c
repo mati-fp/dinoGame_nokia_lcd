@@ -93,7 +93,7 @@ int comeca_jogo(void){
 int main(void)
 {
     // desabilita interrupções
-    cli();
+    //cli();
     // resseta contadores para TIMER1
     TCCR1A = 0;
     TCCR1B = 0;
@@ -118,39 +118,39 @@ int main(void)
    nokia_lcd_init();
    start_screen();
 
-   sei();
+//    sei();
 
    while (1) {
 
    }
 }
 
-ISR(TIMER1_COMPA_vect)
-{
+// ISR(TIMER1_COMPA_vect)
+// {
 
-}
+// }
 
-ISR(INT0_vect)
-{
-    if (PIND & (1 << PD0))
-        if (comecarJogo)
-        {
-            naTelaInicial = 0;
-            comeca_jogo();
-        }
+// ISR(INT0_vect)
+// {
+//     if (PIND & (1 << PD0))
+//         if (comecarJogo)
+//         {
+//             naTelaInicial = 0;
+//             comeca_jogo();
+//         }
     
-    if (PIND & (1 << PD1))
-    {
-        print_jumping_dino();
-        dinoPulando = 1;
-    }
+//     if (PIND & (1 << PD1))
+//     {
+//         print_jumping_dino();
+//         dinoPulando = 1;
+//     }
 
-    if (PIND & (1 << PD2))
-        while (PIND & (1 << PD2))
-        {
-            print_ducking_dino();
-            dinoDuck = 1;
-        }
-}   
+//     if (PIND & (1 << PD2))
+//         while (PIND & (1 << PD2))
+//         {
+//             print_ducking_dino();
+//             dinoDuck = 1;
+//         }
+// }   
 
 
