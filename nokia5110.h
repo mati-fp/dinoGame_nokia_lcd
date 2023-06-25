@@ -92,12 +92,14 @@ void nokia_lcd_set_pixel(uint8_t x, uint8_t y, uint8_t value);
  */
 void nokia_lcd_write_char(char code, uint8_t scale);
 
+void nokia_lcd_write_char_opposite(char code, uint8_t scale);
+
 /**
  * Draw string. Example: writeString("abc",3);
  * @str: sending string
  * @scale: size of text
  */
-void nokia_lcd_write_string(const char *str, uint8_t scale);
+void nokia_lcd_write_string(const char *str, uint8_t scale, int opposite);
 
 /**
  * Set cursor position
