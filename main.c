@@ -10,7 +10,7 @@
 #define IRQ_FREQ 1
 
 volatile int melhorTempo = 0;
-volatile int naTelaInicial = 1;
+volatile int comecarJogo = 1;
 volatile int dinoPulando = 0;
 volatile int dinoDuck = 0;
 
@@ -133,7 +133,7 @@ ISR(TIMER1_COMPA_vect)
 ISR(INT0_vect)
 {
     if (PIND & (1 << PD0))
-        if (naTelaInicial)
+        if (comecarJogo)
         {
             naTelaInicial = 0;
             comeca_jogo();
