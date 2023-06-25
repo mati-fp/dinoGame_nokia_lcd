@@ -2,6 +2,8 @@
 #include <util/delay.h>
 #include <stdlib.h>
 #include "nokia5110.h"
+#include <avr/interrupt.h>
+#include <stdint.h>
 
 //tam altura = 0x47
 //tam largura = 0x83
@@ -48,7 +50,6 @@ int start_screen(void)
     print_floor();
     nokia_lcd_render();
 
-    return 0;
 }
 
 int print_dino(void)
@@ -88,13 +89,6 @@ int print_score(void)
 
 int comeca_jogo(void){
 
-}
-
-int main(void)
-{
-    // desabilita interrupções
-    //cli();
-    // resseta contadores para TIMER1
     TCCR1A = 0;
     TCCR1B = 0;
     TCNT1 = 0;
@@ -107,6 +101,19 @@ int main(void)
     // habilita máscara do timer1
     TIMSK1 |= (1 << OCIE1A);
 
+    nokia_lcd_clear();
+    print_score();
+    print_floor();
+    nokia_lcd_render();
+}
+
+int main(void)
+{
+    // desabilita interrupções
+    //cli();
+    //resseta contadores para TIMER1
+    
+
     DDRD &= ~(1 << PD0) | ~(1 << PD1) | ~(1 << PD2) | ~(1 << PD3); // entradas
     PORTD |= (1 << PD0) | (1 << PD1) | (1 << PD2) | (1 << PD3);    // desabilita pull-up
 
@@ -115,42 +122,32 @@ int main(void)
     PCMSK2 |= (1 << PCINT17);       // habilita interrupção para PD1
     PCMSK2 |= (1 << PCINT18);       // habilita interrupção para PD2
 
+    sei();
+
    nokia_lcd_init();
    start_screen();
 
-//    sei();
-
    while (1) {
 
+        if (PIND & (1 << PD0)){
+            if (comecarJogo){
+                comecarJogo = 0;
+                comeca_jogo();
+            }
+        }
    }
 }
 
-// ISR(TIMER1_COMPA_vect)
-// {
 
-// }
-
-// ISR(INT0_vect)
+// ISR(PCINT2_vect)
 // {
 //     if (PIND & (1 << PD0))
 //         if (comecarJogo)
 //         {
-//             naTelaInicial = 0;
+//             comecarJogo = 0;
 //             comeca_jogo();
 //         }
     
-//     if (PIND & (1 << PD1))
-//     {
-//         print_jumping_dino();
-//         dinoPulando = 1;
-//     }
-
-//     if (PIND & (1 << PD2))
-//         while (PIND & (1 << PD2))
-//         {
-//             print_ducking_dino();
-//             dinoDuck = 1;
-//         }
 // }   
 
 
