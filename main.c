@@ -168,6 +168,10 @@ int comeca_jogo(void)
     srand(time(NULL));
     nokia_lcd_clear();
     sei();
+    char sequencia = {'a', 't', 't', 'a', 't', 'a', 'a', 't', 'a', 't', 'a', 'a', 't', 't', 'a', 't'};
+    char* ptr = sequencia;
+    int count = 0;
+    
     while (colisao == 0)
     {
         nokia_lcd_clear();
