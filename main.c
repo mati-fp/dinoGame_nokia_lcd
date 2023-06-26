@@ -192,7 +192,7 @@ int end_screen(){
         _delay_ms(5000);
     }
 
-    else
+    else if (tempoAtual > 84)
     {
         nokia_lcd_set_cursor(1, 12);
         sprintf(score, "You: %d", tempoAtual);
@@ -205,7 +205,13 @@ int end_screen(){
         _delay_ms(5000);
     }
 
-    nokia_lcd_power(0);
+    flechaNaTela = 0;
+    arvoreNaTela = 0;
+    posicaoArvore = 76;
+    posicaoFlecha = 69;
+    colisao = 0;
+    tempoAtual = 0;
+    jogoRolando = !jogoRolando;
 }
 
 int detect_coll()
@@ -214,7 +220,8 @@ int detect_coll()
     {
         if(dinoJump == 0)
         {
-            end_screen();
+            colisao = 1;
+            cli();
         }
     }
     
@@ -222,7 +229,8 @@ int detect_coll()
     {
         if(dinoDuck == 0)
         {
-            end_screen();
+            colisao = 1;
+            cli(); 
         }
     }
 }
@@ -238,18 +246,25 @@ int comeca_jogo(void)
         print_score();
 
         if (PIND & (1 << PD2) | dinoJump)
-        { // verificando pulo
+        {   // do jump
+            nokia_lcd_clear();
+            print_score();
             dinoDuck = 0;
             print_jumping_dino();
             dinoJump = 1;   
         }
 
         if (PIND & (1 << PD3) | dinoDuck)
-        { // verificando duck
+        {   // do duck
+            nokia_lcd_clear();
+            print_score();
             dinoJump = 0;
             print_ducking_dino();
             dinoDuck = 1;
         }
+
+        if (!(PIND & (1 << PD3)))
+            dinoDuck = 0;
 
         if (!(dinoJump) & !(dinoDuck))
             print_dino();
@@ -316,6 +331,10 @@ int comeca_jogo(void)
         nokia_lcd_render();
         detect_coll();
 
+        if (colisao){
+            break;
+        }
+
         if(tempoAtual % 4 == 0)
         {
            if(tempoAtual == 28 || tempoAtual == 44)
@@ -329,7 +348,7 @@ int comeca_jogo(void)
             arvoreNaTela = 1;
         }
     }
-    cli();
+    end_screen();
 }
 
 ISR(TIMER1_COMPA_vect)
@@ -337,22 +356,12 @@ ISR(TIMER1_COMPA_vect)
     if (jogoRolando)
         tempoAtual++;
 
-    if (dinoDuck == 1)
-    {
-        contDuck--;
-    }
 
     if (dinoJump == 1)
     {
         //contJump--;
         contJump = 0;
     }   
-
-    if (contDuck <= 0)
-    {
-        dinoDuck = 0;
-        contDuck = 1;
-    }
 
     if (contJump <= 0)
     {
@@ -381,13 +390,6 @@ int main(void)
     DDRD &= ~(1 << PD1) | ~(1 << PD2) | ~(1 << PD3); // entradas
     PORTD |= (1 << PD1) | (1 << PD2) | (1 << PD3);   // desabilita pull-up
 
-    // PCICR |= (1 << PCIE2);         // habilita vetor de interrupcao para PD7 .. PD0
-    // PCMSK2 |= (1 << PCINT17);      // habilita i nterrupcao para PD1
-    // PCMSK2 |= (1 << PCINT18);      // habilita interrupcao para PD2
-    // PCMSK2 |= (1 << PCINT19);      // habilita interrupcao para PD3
-
-    // sei();
-
     nokia_lcd_init();
     start_screen();
 
@@ -401,27 +403,3 @@ int main(void)
             }
     }
 }
-
-// ISR(PCINT2_vect)
-// {
-//     if (PIND & (1 << PD1))
-//         if (!(jogoRolando))
-//         {
-//             jogoRolando = 1;
-//             comeca_jogo();
-//         }
-
-//     if (PIND & (1 << PD2))
-//     { // verificando pulo
-//         dinoJump = !dinoJump;
-//         _delay_ms(2000); // debounce
-//         dinoJump = !dinoJump;
-//     }
-
-//     if (PIND & (1 << PD3))
-//     { // verificando duck
-//         dinoDuck = !dinoDuck;
-//         _delay_ms(2000); // debounce
-//         dinoDuck = !dinoDuck;
-//     }
-// }
