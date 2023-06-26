@@ -4,9 +4,10 @@
 #include <avr/interrupt.h>
 #include <stdlib.h>
 #include "nokia5110.h"
+#include <time.h>
 
 #define TIMER_CLK F_CPU / 1024
-#define IRQ_FREQ 1
+#define IRQ_FREQ 1.5
 
 // tam altura = 0x47
 // tam largura = 0x83
@@ -85,7 +86,7 @@ int print_jumping_dino(void)
 {
     nokia_lcd_custom(1, dinoUp);
     nokia_lcd_set_cursor(1, 18);
-    nokia_lcd_write_string("\001", 2, 0);
+    nokia_lcd_write_string("\001", 2, 0);  
 }
 
 int print_ducking_dino(void)
@@ -111,7 +112,7 @@ int print_score(void)
 
 int print_tree(int x)
 {
-    if (x == 0)
+    if (x <= 0)
     {
         posicaoArvore = 69;
         arvoreNaTela = !arvoreNaTela;
@@ -124,7 +125,7 @@ int print_tree(int x)
 
 int print_arrow(int x)
 {
-    if (x == 0)
+    if (x <= 0)
     {
         posicaoFlecha = 69;
         flechaNaTela = !flechaNaTela;
@@ -149,13 +150,13 @@ int end_screen(){
 }
 
 int detect_coll(){
-    if(posicaoArvore == 10){
+    if(posicaoArvore <= 10){
         if(dinoJump == 0){
             end_screen();
         }
     }
     
-    if(posicaoFlecha == 10){
+    if(posicaoFlecha <= 10){
         if(dinoDuck == 0){
             end_screen();
         }
@@ -171,6 +172,18 @@ int comeca_jogo(void)
     {
         nokia_lcd_clear();
         print_score();
+
+        // int val = rand() % 10;
+        // if (val <=5)
+        // {
+        //     flechaNaTela = 1;
+        //     arvoreNaTela = 0;
+        // }
+        // else
+        // {
+        //     arvoreNaTela = 1;
+        //     flechaNaTela = 0;
+        // }
 
         if (PIND & (1 << PD2) | dinoJump)
         { // verificando pulo
@@ -191,19 +204,49 @@ int comeca_jogo(void)
 
         if (flechaNaTela)
         {
-            print_arrow(posicaoFlecha); // posicao inicial da flecha
-            posicaoFlecha--;
+            if(tempoAtual <= 10) 
+            {
+                print_arrow(posicaoFlecha); // posicao inicial da flecha
+                posicaoFlecha--;
+            }
+            else if (tempoAtual >= 10 && tempoAtual <= 30)
+            {
+                print_arrow(posicaoFlecha); // posicao inicial da flecha
+                posicaoFlecha = posicaoFlecha - 2;
+            }
+
+            else if (tempoAtual >= 30 && tempoAtual <= 60)
+            {
+                print_arrow(posicaoFlecha); // posicao inicial da flecha
+                posicaoFlecha = posicaoFlecha - 2;
+            }
+            
+            
         }
         if (arvoreNaTela)
         {   
-            print_tree(posicaoArvore); // posicao inicial da arvore
-            posicaoArvore--;
+            if(tempoAtual <= 10) 
+            {
+                print_tree(posicaoArvore); // posicao inicial da arvore
+                posicaoArvore--;
+            }
+            else if (tempoAtual >= 10 && tempoAtual <= 30)
+            {
+                print_tree(posicaoArvore); // posicao inicial da arvore
+                posicaoArvore = posicaoArvore - 2;
+            }
+
+            else if (tempoAtual >= 30 && tempoAtual <= 60)
+            {
+                print_tree(posicaoArvore); // posicao inicial da arvore
+                posicaoArvore = posicaoArvore - 3;
+            }
+            
+            
         }
         print_floor();
         nokia_lcd_render();
         detect_coll();
-        
-        
 
         if(tempoAtual%4==0){
            flechaNaTela = 1;
@@ -211,10 +254,11 @@ int comeca_jogo(void)
         if(tempoAtual%9==0){
             arvoreNaTela = 1;
         }
-    
+
     }
     cli();
     contagem = 10;
+    //#define IRQ_FREQ 4
 }
 
 ISR(TIMER1_COMPA_vect)
@@ -229,19 +273,20 @@ ISR(TIMER1_COMPA_vect)
 
     if (dinoJump == 1)
     {
-        contJump--;
+        //contJump--;
+        contJump = 0;
     }   
 
     if (contDuck <= 0)
     {
         dinoDuck = 0;
-        contDuck = 2;
+        contDuck = 1;
     }
 
     if (contJump <= 0)
     {
         dinoJump = 0;
-        contJump = 2;
+        contJump = 1;
     }
 }
 
