@@ -203,6 +203,54 @@ void nokia_lcd_write_char(char code, uint8_t scale)
     }
 }
 
+void nokia_lcd_write_char_opposite(char code, uint8_t scale)
+{
+    register uint8_t x, y;
+
+    if (code >= 0x80)
+        return; // 7 bit ASCII only
+    const uint8_t *glyph;
+    uint8_t pgm_buffer[5];
+    if (code >= ' ')
+    {
+        memcpy_P(pgm_buffer, &CHARSET[code - ' '], sizeof(pgm_buffer));
+        glyph = pgm_buffer;
+    }
+    else
+    {
+        // Custom glyphs, on the other hand, are stored in RAM...
+        if (CUSTOM[(int)code])
+        {
+            glyph = CUSTOM[(int)code];
+        }
+        else
+        {
+            // Default to a space character if unset...
+            memcpy_P(pgm_buffer, &CHARSET[0], sizeof(pgm_buffer));
+            glyph = pgm_buffer;
+        }
+    }
+    for (x = 0; x < 7 * scale; x++)
+        for (y = 0; y < 5 * scale; y++)
+            //if (pgm_read_byte(&CHARSET[code-32][x/scale]) & (1 << y/scale))
+            if (glyph[4 - y / scale] & (1 << x / scale))
+                nokia_lcd_set_pixel(nokia_lcd.cursor_x + x, nokia_lcd.cursor_y + y, 1);
+            else
+                nokia_lcd_set_pixel(nokia_lcd.cursor_x + x, nokia_lcd.cursor_y + y, 0);
+
+    nokia_lcd.cursor_x += 5 * scale + 1;
+    if (nokia_lcd.cursor_x >= 84)
+    {
+        nokia_lcd.cursor_x = 0;
+        nokia_lcd.cursor_y += 7 * scale + 1;
+    }
+    if (nokia_lcd.cursor_y >= 48)
+    {
+        nokia_lcd.cursor_x = 0;
+        nokia_lcd.cursor_y = 0;
+    }
+}
+
 void nokia_lcd_custom(char code, uint8_t *glyph)
 {
     // Check if valid (ASCII 0 to 31)
@@ -211,10 +259,17 @@ void nokia_lcd_custom(char code, uint8_t *glyph)
     CUSTOM[(int)code] = glyph;
 }
 
-void nokia_lcd_write_string(const char *str, uint8_t scale)
+void nokia_lcd_write_string(const char *str, uint8_t scale, int opposite)
 {
-    while (*str)
-        nokia_lcd_write_char(*str++, scale);
+    if (opposite)
+    {
+        while (*str)
+            nokia_lcd_write_char_opposite(*str++, scale);
+    }
+    else {
+        while (*str)
+            nokia_lcd_write_char(*str++, scale);
+    }
 }
 
 void nokia_lcd_set_cursor(uint8_t x, uint8_t y)
