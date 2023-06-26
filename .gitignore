@@ -1,1 +1,7 @@
 ./display_backup.simu
+./code.elf
+./code.hex
+./code.lst
+./code.sec
+./main.o
+./nokia5110.o
