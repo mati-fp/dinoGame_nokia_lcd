@@ -218,7 +218,6 @@ void end_screen(void)
     }
 
     reset_game();
-
 }
 
 void reset_game(void)
@@ -231,7 +230,6 @@ void reset_game(void)
     colisao = 0;
     tempoAtual = 0;
     jogoRolando = !jogoRolando;
-
 }
 
 void detect_coll(void)
@@ -253,7 +251,6 @@ void detect_coll(void)
             cli();
         }
     }
-
 }
 
 void choose_dino_to_print(void)

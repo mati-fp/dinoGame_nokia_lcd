@@ -184,7 +184,7 @@ void nokia_lcd_write_char(char code, uint8_t scale)
     }
     for (x = 0; x < 5 * scale; x++)
         for (y = 0; y < 7 * scale; y++)
-            //if (pgm_read_byte(&CHARSET[code-32][x/scale]) & (1 << y/scale))
+            // if (pgm_read_byte(&CHARSET[code-32][x/scale]) & (1 << y/scale))
             if (glyph[x / scale] & (1 << y / scale))
                 nokia_lcd_set_pixel(nokia_lcd.cursor_x + x, nokia_lcd.cursor_y + y, 1);
             else
@@ -232,7 +232,7 @@ void nokia_lcd_write_char_opposite(char code, uint8_t scale)
     }
     for (x = 0; x < 7 * scale; x++)
         for (y = 0; y < 5 * scale; y++)
-            //if (pgm_read_byte(&CHARSET[code-32][x/scale]) & (1 << y/scale))
+            // if (pgm_read_byte(&CHARSET[code-32][x/scale]) & (1 << y/scale))
             if (glyph[4 - y / scale] & (1 << x / scale))
                 nokia_lcd_set_pixel(nokia_lcd.cursor_x + x, nokia_lcd.cursor_y + y, 1);
             else
@@ -266,7 +266,8 @@ void nokia_lcd_write_string(const char *str, uint8_t scale, int opposite)
         while (*str)
             nokia_lcd_write_char_opposite(*str++, scale);
     }
-    else {
+    else
+    {
         while (*str)
             nokia_lcd_write_char(*str++, scale);
     }
