@@ -346,15 +346,17 @@ void choose_next_obj_to_print(void)
 {
     if (tempoAtual % 4 == 0)
     {
-        if (tempoAtual == 28 || tempoAtual == 44)
+        if (tempoAtual == 8 || tempoAtual == 28 || tempoAtual == 44)
             flechaNaTela = 0;
-        flechaNaTela = 1;
+        else 
+            flechaNaTela = 1;
     }
     if (tempoAtual % 9 == 0)
     {
         if (tempoAtual == 36 || tempoAtual == 72)
             arvoreNaTela = 0;
-        arvoreNaTela = 1;
+        else 
+            arvoreNaTela = 1;
     }
 }
 
