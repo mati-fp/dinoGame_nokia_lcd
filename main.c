@@ -166,7 +166,7 @@ void end_screen(void)
     nokia_lcd_drawline(0, 9, 83, 9);
     nokia_lcd_set_cursor(1, 12);
 
-    if (tempoAtual < 16)
+    if (tempoAtual <= 16)
     {
         nokia_lcd_set_cursor(1, 12);
         nokia_lcd_write_string("Lo: 84", 1, 0);
@@ -178,7 +178,7 @@ void end_screen(void)
         _delay_ms(4000);
     }
 
-    else if (tempoAtual > 16 && tempoAtual < 32)
+    else if (tempoAtual > 16 && tempoAtual <= 32)
     {
         nokia_lcd_set_cursor(1, 12);
         nokia_lcd_write_string("Lo: 84", 1, 0);
@@ -191,7 +191,7 @@ void end_screen(void)
         _delay_ms(4000);
     }
 
-    else if (tempoAtual > 32 && tempoAtual < 84)
+    else if (tempoAtual > 32 && tempoAtual <= 84)
     {
         nokia_lcd_set_cursor(1, 12);
         nokia_lcd_write_string("Lo: 84", 1, 0);
